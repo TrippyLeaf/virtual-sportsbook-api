@@ -1,49 +1,84 @@
 BEGIN;
 
 TRUNCATE
-  Users,
-  Leagues,
-  Matches,
-  Odds
-
+  users,
+  sports,
+  leagues,
+  matches,
+  bets,
+  teams,
+  league_teams
 RESTART IDENTITY CASCADE;
 
-INSERT INTO Users (user_name, full_name, email, password, user_balance)
+INSERT INTO users (user_name, email, password, user_balance)
 VALUES
-  ('TestAccount', 'Test_First Test_Last', 'test@email.com', 'test', 100)
+  ('TestAccount', 'test@email.com', 'test', 100)
 ;
 
-INSERT INTO Leagues (league_name, league_id)
+INSERT INTO sports (sport_name)
+VALUES
+  ('American Football'),
+  ('Basketball'),
+  ('Baseball'),
+  ('Boxing/MMA'),
+  ('Golf')
+;
+
+INSERT INTO leagues (league_name, sport_id)
 VALUES
   ('NFL', 1),
-  ('NCAAFB', 2),
-  ('NBA', 3),
-  ('NCAABB', 4),
-  ('MLB', 5),
-  ('UFC/BOXING', 6),
-  ('PGA', 7)
-  ;
-
-INSERT INTO Matches (
-    match_start,
-    league_id,
-    match_id,
-    home_team,
-    away_team
-    
-    
-  )
-VALUES 
-('2022-05-02 07:00:00', 3, 1, 'Heat', '76ers'),
-('2022-05-02 10:00:00', 3, 1, 'Suns', 'Mavs'),
+  ('NCAA -FB', 1),
+  ('NBA', 2),
+  ('NCAA - BB', 2),
+  ('MLB', 3),
+  ('UFC', 4),
+  ('PGA', 5), 
+  ('LPGA', 5)
 ;
 
-INSERT INTO Odds (team_name, spread, moneyline, total)
+INSERT INTO teams (team_name, team_ranking)
+VALUES
+  ('Heat', 1),
+  ('Celtics', 2),
+  ('Bucks', 3),
+  ('76ers', 4),
+  ('Suns', 5),
+  ('Grizzlies', 6),
+  ('Warriors', 7),
+  ('Mavs', 8)
+  ;
+
+INSERT INTO league_teams (league_id, team_id)
 VALUES 
-  ('Heat', -8 1/2, -350, 208 1/2),
-  ('76ers', +8 1/2, +280, 208 1/2),
-  ('Suns', -5 1/2, -235, 214 1/2),
-  ('Mavs', +5 1/2, +190, 214 1/2)
+  (2, 1),
+  (2, 2),
+  (2, 3),
+  (2, 4),
+  (2, 5),
+  (2, 6),
+  (2, 7),
+  (2, 8)
+  ;
+
+INSERT INTO matches (
+    match_start,
+    sport_id, 
+    league_id, 
+    home_team_id, 
+    home_team_price, 
+    away_team_id, 
+    away_team_price
+  )
+VALUES 
+('2022-05-02 07:00:00', 2, 2, 1, -8, 4, +8),
+('2022-05-02 10:00:00', 2, 2, 5, -6, 8, +6)
+;
+
+INSERT INTO odds_pairs (fav, non_fav)
+VALUES 
+  (-8, +8),
+  (-6, +6)
+
 ;
 
 COMMIT;
