@@ -2,14 +2,17 @@ BEGIN;
 
 TRUNCATE
   users,
+  sports,
   leagues,
   matches,
-  odds,
+  bets,
+  teams,
+  league_teams
 RESTART IDENTITY CASCADE;
 
-INSERT INTO users (full_name, email, password, user_name, user_balance)
+INSERT INTO users (user_name, full_name, email, password, user_balance)
 VALUES
-  ('Test_First Test_Last', 'test@email.com', 'test', 'tester', 1000)
+  ('TestAccount', 'Test_First Test_Last', 'test@email.com', 'test', 100)
 ;
 
 INSERT INTO leagues (league_name, league_id)
@@ -19,32 +22,30 @@ VALUES
   ('NBA', 3),
   ('NCAABB', 4),
   ('MLB', 5),
-  ('UFC', 6),
-  ('PGA', 7), 
-  ('NHL', 8),
-
-;
+  ('UFC/BOXING', 6),
+  ('PGA', 7)
+  ;
 
 INSERT INTO matches (
+    match_start,
     league_id,
     match_id,
-    match_start,
-    home_team,
-    bet_id,
-    away_team,
-    bet_id
+    team_name,
+    team_name, 
+    
+    
   )
 VALUES 
-(3, 1, '2022-05-02 7:00:00', 'Heat', 1, '76ers', 2),
-(3, 2, '2022-05-02 10:00:00', 'Suns', 3, 'Mavs', 4)
+('2022-05-02 07:00:00', 3, 1, 'Heat', '76ers'),
+('2022-05-02 10:00:00', 3, 1, 'Suns', 'Mavs'),
 ;
 
-INSERT INTO odds (bet_id, spread, moneyline, total)
+INSERT INTO team_odds ('team_name', 'spread', 'moneyline', 'total')
 VALUES 
-  (1, -8 -110, -350, 208.5),
-  (2, +8 -110, +280, 208.5),
-  (3, -6 -110, -235, 214.5),
-  (4, +6, -110, +190, 214.5)
- ;
+  ('Heat', -8 1/2, -350, 208 1/2),
+  ('76ers', +8 1/2, +280, 208 1/2),
+  ('Suns', -5 1/2, -235, 214 1/2),
+  ('Mavs', +5 1/2, +190, 214 1/2)
+;
 
 COMMIT;
