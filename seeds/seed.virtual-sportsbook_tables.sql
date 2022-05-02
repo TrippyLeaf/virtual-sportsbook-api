@@ -28,8 +28,8 @@ INSERT INTO Matches (
     match_start,
     league_id,
     match_id,
-    team_name,
-    team_name
+    home_team,
+    away_team
     
     
   )
