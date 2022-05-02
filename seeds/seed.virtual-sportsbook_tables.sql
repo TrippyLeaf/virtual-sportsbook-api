@@ -1,21 +1,19 @@
 BEGIN;
 
 TRUNCATE
-  users,
-  sports,
-  leagues,
-  matches,
-  bets,
-  teams,
-  league_teams
+  Users,
+  Leagues,
+  Matches,
+  Odds
+
 RESTART IDENTITY CASCADE;
 
-INSERT INTO users (user_name, full_name, email, password, user_balance)
+INSERT INTO Users (user_name, full_name, email, password, user_balance)
 VALUES
   ('TestAccount', 'Test_First Test_Last', 'test@email.com', 'test', 100)
 ;
 
-INSERT INTO leagues (league_name, league_id)
+INSERT INTO Leagues (league_name, league_id)
 VALUES
   ('NFL', 1),
   ('NCAAFB', 2),
@@ -26,12 +24,12 @@ VALUES
   ('PGA', 7)
   ;
 
-INSERT INTO matches (
+INSERT INTO Matches (
     match_start,
     league_id,
     match_id,
     team_name,
-    team_name, 
+    team_name
     
     
   )
@@ -40,7 +38,7 @@ VALUES
 ('2022-05-02 10:00:00', 3, 1, 'Suns', 'Mavs'),
 ;
 
-INSERT INTO team_odds ('team_name', 'spread', 'moneyline', 'total')
+INSERT INTO Odds (team_name, spread, moneyline, total)
 VALUES 
   ('Heat', -8 1/2, -350, 208 1/2),
   ('76ers', +8 1/2, +280, 208 1/2),
