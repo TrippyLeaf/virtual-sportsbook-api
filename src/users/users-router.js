@@ -1,86 +1,71 @@
-const express = require('express');
-const { requireAuth } = require('../middleware/jwt-auth');
-const UsersService = require('./users-service');
+const bcrypt = require('bcryptjs');
+const xss = require('xss');
 
-const usersRouter = express.Router();
-const jsonBodyParser = express.json();
-
-usersRouter
-  .post('/', jsonBodyParser, (req, res, next) => {
-    const { password, email } = req.body
-    // Check required fields
-    for (const field of ['email', 'password'])
-      if (!req.body[field])
-        return res.status(400).json({
-          error: `Missing '${field}' in request body`
-        })
-    // Validate password    
-    const passwordError = UsersService.validatePassword(password)
-
-    if (passwordError)
-      return res.status(400).json({ error: passwordError });
-    // Check user_name doesnt already exist
-    UsersService.hasUserWithEmail(
-      req.app.get('db'),
-      email
-    )
-      .then(hasUserWithEmail => {
-        if (hasUserWithEmail)
-          return res.status(400).json({ error: `E-Mail already used` });
-
-        return UsersService.hashPassword(password)
-          .then(hashedPassword => {
-            const newUser = {
-              email,
-              password: hashedPassword,
-            };
-
-            return UsersService.insertUser(
-              req.app.get('db'),
-              newUser
-            )
-            .then(result =>  
-              res
-                .status(201)
-                .json(result[0])
-                .end()
-            )
-          })
-      })
-      .catch(next)
-  });
-
-  usersRouter 
-  .get('/:user_id/balance', requireAuth, (req, res, next) => {
-    const user_id = req.params.user_id;
-
-    if (user_id == null )
-        return res.status(400).json({
-          error: `Missing 'user_id' in request body`
-        });
-
-    return UsersService.getUserBalance(req.app.get('db'), user_id)
-      .then(balance => {
-            res
-            .status(200)
-            .json(balance)
-            .end()
-        })
-        .catch(next)
-      });
-
-  usersRouter 
-  .patch('/:user_id/balance', jsonBodyParser, requireAuth, (req, res, next) => {
-    const user_id = req.params.user_id;
+const UsersService = {
+  hasUserWithUserName(db, user_name) {
+    return db('users')
+      .where({ user_name })
+      .first()
+      .then(user => !!user)
+  },
+  insertUser(db, newUser) {
+    return db
+      .insert(newUser)
+      .into('users')
+      .returning('*')
+  },
+  validatePassword(password) {
+    const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
     
-    return UsersService.reloadUserBalance(req.app.get('db'), user_id)
-      .then(balance => {
-            res
-            .status(200)
-            .json(balance)
-            .end()
-        })
-        .catch(next)
-      });
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters'
+    }
+    if (password.length > 72) {
+      return 'Password must be less than 72 characters'
+    }
+    if (password.startsWith(' ') || password.endsWith(' ')) {
+      return 'Password cannot start or end with empty spaces'
+    }
+    if (!REGEX_UPPER_LOWER_NUMBER_SPECIAL.test(password)) {
+      return 'Password must contain one upper case, lower case, number and special character'
+    }
+    return null
+  },
+  hashPassword(password) {
+    return bcrypt.hash(password, 12)
+  },
+  serializeUser(user) {
+    return {
+      email: xss(user.email),
+      user_name: xss(user.user_name),
+      date_created: new Date(user.date_created),
+    }
+  },
+  getUserBalance(db, user_id) {
+    return db('users')
+      .select('user_balance')
+      .where({user_id})
+      .then(res => {
+        return res[0]
+      })
+  }, 
+  // Update user balance (On place bet and bet settlement)
+  updateUserBalance(db, user_id, user_balance) {
+    return db('users')
+      .where({user_id})
+      .update({user_balance})
+      .returning('user_balance') 
+  },
+  // Reload user balance with 1000
+  reloadUserBalance(db, user_id) {
+    return this.getUserBalance(db, user_id)
+    .then(res => {
+      if (res.user_balance <= 0 ) {
+        return this.updateUserBalance(db, user_id, 1000)
+        .then(newBalance => newBalance[0])
+      } else return res.user_balance
+    })
+  }
+};
 
-module.exports = usersRouter;
+module.exports = UsersService;
