@@ -2,11 +2,11 @@ const bcrypt = require('bcryptjs');
 const xss = require('xss');
 
 const UsersService = {
-  hasUserWithEmail(db, email) {
+  hasUserWithUserName(db, user_name) {
     return db('users')
       .where({ user_name })
       .first()
-      .then(email => !!email)
+      .then(user => !!user)
   },
   insertUser(db, newUser) {
     return db
@@ -36,8 +36,8 @@ const UsersService = {
   },
   serializeUser(user) {
     return {
-      user_name: xss(user.user_name),
       email: xss(user.email),
+      user_name: xss(user.user_name),
       date_created: new Date(user.date_created),
     }
   },
@@ -49,7 +49,7 @@ const UsersService = {
         return res[0]
       })
   }, 
-  // Update user balance
+  // Update user balance (On place bet and bet settlement)
   updateUserBalance(db, user_id, user_balance) {
     return db('users')
       .where({user_id})
@@ -61,7 +61,7 @@ const UsersService = {
     return this.getUserBalance(db, user_id)
     .then(res => {
       if (res.user_balance <= 0 ) {
-        return this.updateUserBalance(db, user_id, 100)
+        return this.updateUserBalance(db, user_id, 1000)
         .then(newBalance => newBalance[0])
       } else return res.user_balance
     })
