@@ -1,8 +1,7 @@
 BEGIN;
 
 TRUNCATE
-  users,
-  sports,
+  accounts,
   leagues,
   matches,
   bets,
@@ -10,42 +9,34 @@ TRUNCATE
   league_teams
 RESTART IDENTITY CASCADE;
 
-INSERT INTO users (user_name, email, password, user_balance)
+INSERT INTO accounts (email, user_balance)
 VALUES
-  ('TestAccount', 'test@email.com', 'test', 100)
+  ('test@email.com', 100)
 ;
 
-INSERT INTO sports (sport_name)
+INSERT INTO leagues (league_name, league)
 VALUES
-  ('American Football'),
-  ('Basketball'),
-  ('Baseball'),
-  ('Boxing/MMA'),
-  ('Golf')
+  ('NFL'),
+  ('NCAAFB'),
+  ('NBA'),
+  ('NCAABB'),
+  ('MLB'),
+  ('NASCAR'),
+  ('UFC'), 
+  ('BOXING')
+  ('PGA')
 ;
 
-INSERT INTO leagues (league_name, sport_id)
+INSERT INTO teams (team_name, league_id)
 VALUES
-  ('NFL', 1),
-  ('NCAA -FB', 1),
-  ('NBA', 2),
-  ('NCAA - BB', 2),
-  ('MLB', 3),
-  ('UFC', 4),
-  ('PGA', 5), 
-  ('LPGA', 5)
-;
-
-INSERT INTO teams (team_name, team_ranking)
-VALUES
-  ('Heat', 1),
+  ('Heat', 2),
   ('Celtics', 2),
-  ('Bucks', 3),
-  ('76ers', 4),
-  ('Suns', 5),
-  ('Grizzlies', 6),
-  ('Warriors', 7),
-  ('Mavs', 8)
+  ('Bucks', 2),
+  ('76ers', 2),
+  ('Suns', 2),
+  ('Grizzlies', 2),
+  ('Warriors', 2),
+  ('Mavs', 2)
   ;
 
 INSERT INTO league_teams (league_id, team_id)
