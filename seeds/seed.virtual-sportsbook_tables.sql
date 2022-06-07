@@ -14,17 +14,17 @@ VALUES
   ('test@email.com', 100)
 ;
 
-INSERT INTO leagues (league_name, league)
+INSERT INTO leagues (League_id, league_name)
 VALUES
-  ('NFL'),
-  ('NCAAFB'),
-  ('NBA'),
-  ('NCAABB'),
-  ('MLB'),
-  ('NASCAR'),
-  ('UFC'), 
-  ('BOXING')
-  ('PGA')
+  (1, 'NFL'),
+  (2, 'NCAAFB'),
+  (3, 'NBA'),
+  (4, 'NCAABB'),
+  (5, 'MLB'),
+  (6, 'NASCAR'),
+  (7, 'UFC'), 
+  (8, 'BOXING')
+  (9, 'PGA')
 ;
 
 INSERT INTO teams (team_name, league_id)
